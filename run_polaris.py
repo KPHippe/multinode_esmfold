@@ -42,7 +42,7 @@ def write_fasta(
             f.write(f">{seq.tag}\n{seq.sequence}\n")
 
 
-def find_workfiles(in_files: List[Union[Path, str]]) -> List[Union[Path, str]]:
+def find_workseqs(in_files: List[Sequence]) -> List[Sequence]:
 
     num_nodes = int(os.environ.get("NRANKS", 1))
 
@@ -86,31 +86,32 @@ def main(fasta: Path, out_dir: Path, glob_pattern: str, test: bool):
     out_dir.mkdir(exist_ok=True, parents=True)
     fasta_temp_dir = out_dir / "tmp_fasta"
     fasta_temp_dir.mkdir(exist_ok=True, parents=True)
-    fasta_files = []
+    seqs = []
     if fasta.is_file():
         # Write each seq to a temp fasta file inside a dir
         for seq in read_fasta(fasta):
             fasta_temp_file = fasta_temp_dir / f"{seq.tag}.fasta"
-            write_fasta(seq, fasta_temp_file)
-
-            if not (out_dir / fasta_temp_file.stem).exists():
-                fasta_files.append(fasta_temp_file)
+            if not (out_dir / fasta_temp_file.stem).is_dir():
+                seqs.append(seq)
 
     else:  # Is a directory of fasta files
         # Assuming just one seq per fasta file
         for file in fasta.glob(glob_pattern):
             seq = read_fasta(file)[0]  # Here is the one seq assumption
             fasta_temp_file = fasta_temp_dir / f"{seq.tag}.fasta"
+            if not (out_dir / fasta_temp_file.stem).is_dir():
+                seqs.append(seq)
+
+    node_seqs = find_workseqs(seqs)
+
+    for seq in node_seqs:
+        fasta_temp_file = fasta_temp_dir / f"{seq.tag}.fasta"
+        if not fasta_temp_file.is_file():
             write_fasta(seq, fasta_temp_file)
-            if not (out_dir / fasta_temp_file.stem).exists():
-                fasta_files.append(fasta_temp_file)
 
-    node_files = find_workfiles(fasta_files)
+        file_out_dir = out_dir / fasta_temp_file.stem
 
-    for file in node_files:
-        file_out_dir = out_dir / file.stem
-
-        status_code = run_esmfold(file, file_out_dir, test)
+        status_code = run_esmfold(fasta_temp_file, file_out_dir, test)
         if status_code != 0:
             print(f"Error running {file}... continuing")
 
@@ -139,5 +140,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     main(args.fasta, args.out_dir, args.glob_pattern, args.test)
-
 
