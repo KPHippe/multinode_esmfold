@@ -68,7 +68,7 @@ def find_workseqs(in_files: List[Sequence]) -> List[Sequence]:
 def run_esmfold(
     in_fasta_file: Path, out_dir: Path, cache_dir: str = "", test: bool = False
 ) -> int:
-    cache_command = f"--cache_dir {cache_dir}" if len(cache_dir) != 0 else ""
+    cache_command = f"--cache_dir {cache_dir}" if len(str(cache_dir)) != 0 else ""
     command = (
         "python /lus/eagle/projects/CVD-Mol-AI/hippekp/github/multinode_esmfold/run_pretrained_esmfold.py "
         + f"--fasta {in_fasta_file} "
