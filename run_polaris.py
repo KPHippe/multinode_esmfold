@@ -93,7 +93,7 @@ def main(fasta: Path, out_dir: Path, glob_pattern: str, test: bool):
             fasta_temp_file = fasta_temp_dir / f"{seq.tag}.fasta"
             write_fasta(seq, fasta_temp_file)
 
-            if not (out_dir / fasta_temp_file.stem).is_dir():
+            if not (out_dir / fasta_temp_file.stem).exists():
                 fasta_files.append(fasta_temp_file)
 
     else:  # Is a directory of fasta files
@@ -102,7 +102,7 @@ def main(fasta: Path, out_dir: Path, glob_pattern: str, test: bool):
             seq = read_fasta(file)[0]  # Here is the one seq assumption
             fasta_temp_file = fasta_temp_dir / f"{seq.tag}.fasta"
             write_fasta(seq, fasta_temp_file)
-            if not (out_dir / fasta_temp_file.stem).is_dir() and :
+            if not (out_dir / fasta_temp_file.stem).exists():
                 fasta_files.append(fasta_temp_file)
 
     node_files = find_workfiles(fasta_files)
@@ -139,4 +139,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     main(args.fasta, args.out_dir, args.glob_pattern, args.test)
+
 

@@ -15,7 +15,8 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 formatter = logging.Formatter(
-    "%(asctime)s | %(levelname)s | %(name)s | %(message)s", datefmt="%y/%m/%d %H:%M:%S",
+    "%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+    datefmt="%y/%m/%d %H:%M:%S",
 )
 
 console_handler = logging.StreamHandler(sys.stdout)
@@ -78,7 +79,11 @@ def create_batched_sequence_datasest(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-i", "--fasta", help="Path to input FASTA file", type=Path, required=True,
+        "-i",
+        "--fasta",
+        help="Path to input FASTA file",
+        type=Path,
+        required=True,
     )
     parser.add_argument(
         "-o", "--pdb", help="Path to output PDB directory", type=Path, required=True
