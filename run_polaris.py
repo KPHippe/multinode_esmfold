@@ -58,7 +58,7 @@ def find_workseqs(in_files: List[Sequence]) -> List[Sequence]:
         print(
             f"GPU {gpu_rank} / {num_gpus} starting at {start_idx}, ending at {end_idx} ({len(in_files)=})"
         )
-        print(f"{pmi_rank=}, {node_rank=}")
+        print(f"{pmi_rank=}, {node_rank=}, {(node_rank * 4) + pmi_rank=}")
         node_data = in_files[start_idx:end_idx]
     else:
         node_data = in_files[:]
