@@ -8,6 +8,7 @@ from pydantic import BaseModel
 
 node_rank = int(os.environ.get("NODE_RANK", 0))  # zero indexed
 pmi_rank = int(os.environ.get("PMI_LOCAL_RANK", 0))
+subnode_rank = int(os.environ.get("SUBNODE_RANK", 0))
 
 PathLike = Union[Path, str]
 
@@ -59,6 +60,7 @@ def find_workseqs(in_files: List[Sequence]) -> List[Sequence]:
             f"GPU {gpu_rank} / {num_gpus} starting at {start_idx}, ending at {end_idx} ({len(in_files)=})"
         )
         print(f"{pmi_rank=}, {node_rank=}, {(node_rank * 4) + pmi_rank=}")
+        print(f"{subnode_rank=}")
         node_data = in_files[start_idx:end_idx]
     else:
         node_data = in_files[:]
