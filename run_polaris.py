@@ -8,7 +8,6 @@ from pydantic import BaseModel
 
 node_rank = int(os.environ.get("NODE_RANK", 0))  # zero indexed
 pmi_rank = int(os.environ.get("PMI_RANK", 0))
-subnode_rank = int(os.environ.get("SUBNODE_RANK", 0))
 
 PathLike = Union[Path, str]
 
@@ -46,9 +45,8 @@ def write_fasta(
 def find_workseqs(in_files: List[Sequence]) -> List[Sequence]:
 
     num_nodes = int(os.environ.get("NRANKS", 1))
-
-    gpu_rank = (node_rank * 4) + pmi_rank
     num_gpus = num_nodes * 4
+    gpu_rank = pmi_rank
     if num_gpus > 1:
         chunk_size = len(in_files) // num_gpus
         start_idx = gpu_rank * chunk_size
@@ -59,7 +57,6 @@ def find_workseqs(in_files: List[Sequence]) -> List[Sequence]:
         print(
             f"GPU {gpu_rank} / {num_gpus} starting at {start_idx}, ending at {end_idx} ({len(in_files)=})"
         )
-        print(f"{pmi_rank=}, {node_rank=}, {subnode_rank=}")
         node_data = in_files[start_idx:end_idx]
     else:
         node_data = in_files[:]
