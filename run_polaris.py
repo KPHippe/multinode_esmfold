@@ -56,8 +56,9 @@ def find_workseqs(in_files: List[Sequence]) -> List[Sequence]:
             end_idx = len(in_files)
 
         print(
-            f"GPU {gpu_rank}/ {num_gpus} starting at {start_idx}, ending at {end_idx} ({len(in_files)=}"
+            f"GPU {gpu_rank} / {num_gpus} starting at {start_idx}, ending at {end_idx} ({len(in_files)=})"
         )
+        print(f"{pmi_rank=}, {node_rank=}")
         node_data = in_files[start_idx:end_idx]
     else:
         node_data = in_files[:]
@@ -149,4 +150,3 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     main(args.fasta, args.out_dir, args.glob_pattern, args.test, args.cache_dir)
-
