@@ -11,11 +11,14 @@ import esm
 from esm.data import read_fasta
 from timeit import default_timer as timer
 
+VERBOSE = False
+
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 formatter = logging.Formatter(
-    "%(asctime)s | %(levelname)s | %(name)s | %(message)s", datefmt="%y/%m/%d %H:%M:%S",
+    "%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+    datefmt="%y/%m/%d %H:%M:%S",
 )
 
 console_handler = logging.StreamHandler(sys.stdout)
@@ -78,7 +81,11 @@ def create_batched_sequence_datasest(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-i", "--fasta", help="Path to input FASTA file", type=Path, required=True,
+        "-i",
+        "--fasta",
+        help="Path to input FASTA file",
+        type=Path,
+        required=True,
     )
     parser.add_argument(
         "-o", "--pdb", help="Path to output PDB directory", type=Path, required=True
@@ -113,7 +120,11 @@ if __name__ == "__main__":
     parser.add_argument(
         "--cache_dir", type=Path, help="If you have a custom torchhub path"
     )
+    parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args()
+
+    if args.verbose:
+        VERBOSE = True
 
     if args.cache_dir and args.cache_dir.exists():
         torch.hub.set_dir(args.cache_dir)
@@ -124,13 +135,15 @@ if __name__ == "__main__":
     args.pdb.mkdir(exist_ok=True)
 
     # Read fasta and sort sequences by length
-    logger.info(f"Reading sequences from {args.fasta}")
+    if VERBOSE:
+        logger.info(f"Reading sequences from {args.fasta}")
     all_sequences = sorted(
         read_fasta(args.fasta), key=lambda header_seq: len(header_seq[1])
     )
-    logger.info(f"Loaded {len(all_sequences)} sequences from {args.fasta}")
+    if VERBOSE:
+        logger.info(f"Loaded {len(all_sequences)} sequences from {args.fasta}")
 
-    logger.info("Loading model")
+        logger.info("Loading model")
     model = esm.pretrained.esmfold_v1()
     model = model.eval()
     model.set_chunk_size(args.chunk_size)
@@ -141,7 +154,9 @@ if __name__ == "__main__":
         model = init_model_on_gpu_with_cpu_offloading(model)
     else:
         model.cuda()
-    logger.info("Starting Predictions")
+
+    if VERBOSE:
+        logger.info("Starting Predictions")
     batched_sequences = create_batched_sequence_datasest(
         all_sequences, args.max_tokens_per_batch
     )
@@ -184,4 +199,3 @@ if __name__ == "__main__":
                 f"pTM {ptm:0.3f} in {time_string}. "
                 f"{num_completed} / {num_sequences} completed."
             )
-
