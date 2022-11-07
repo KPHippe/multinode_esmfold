@@ -8,8 +8,8 @@ def main(input_dir: Path):
     for dir in input_dir.glob("*"):
         num_out_files = len(list(dir.glob("*.out")))
         num_pdb_files = len(list(dir.glob("*.pdb")))
-
-        if num_out_files > 0 and num_pdb_files == 0:
+        num_fasta_files = len(list(dir.glob("*.fasta")))
+        if num_out_files > 0 and num_pdb_files == 0 and num_fasta_files == 0:
             to_delete.append(dir)
 
     for dir in to_delete:
