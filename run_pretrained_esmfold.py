@@ -194,8 +194,11 @@ if __name__ == "__main__":
             output_file = args.pdb / f"{header}.pdb"
             output_file.write_text(pdb_string)
             num_completed += 1
-            logger.info(
-                f"Predicted structure for {header} with length {len(seq)}, pLDDT {mean_plddt:0.1f}, "
-                f"pTM {ptm:0.3f} in {time_string}. "
-                f"{num_completed} / {num_sequences} completed."
-            )
+            if VERBOSE:
+                logger.info(
+                    f"Predicted structure for {header} with length {len(seq)}, pLDDT {mean_plddt:0.1f}, "
+                    f"pTM {ptm:0.3f} in {time_string}. "
+                    f"{num_completed} / {num_sequences} completed."
+                )
+            else:
+                print(f"Folded {header}...")
