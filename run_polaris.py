@@ -65,11 +65,15 @@ def find_workseqs(in_files: List[Sequence]) -> List[Sequence]:
 
 
 def run_esmfold(
-    in_fasta_file: Path, out_dir: Path, cache_dir: str = "", test: bool = False
+    in_fasta_file: Path,
+    out_dir: Path,
+    executable_path: Path,
+    cache_dir: str = "",
+    test: bool = False,
 ) -> int:
     cache_command = f"--cache_dir {cache_dir}" if len(str(cache_dir)) != 0 else ""
     command = (
-        "python /lus/eagle/projects/CVD-Mol-AI/hippekp/github/multinode_esmfold/run_pretrained_esmfold.py "
+        f"python {str(executable_path)} "
         + f"--fasta {in_fasta_file} "
         + f"-o {out_dir} "
         + cache_command
@@ -86,7 +90,12 @@ def run_esmfold(
 
 
 def main(
-    fasta: Path, out_dir: Path, glob_pattern: str, test: bool, cache_dir: Optional[str]
+    fasta: Path,
+    out_dir: Path,
+    executable_path: Path,
+    glob_pattern: str,
+    test: bool,
+    cache_dir: Optional[str],
 ):
     out_dir.mkdir(exist_ok=True, parents=True)
     fasta_temp_dir = out_dir / "tmp_fasta"
@@ -116,7 +125,9 @@ def main(
 
         file_out_dir = out_dir / fasta_temp_file.stem
 
-        status_code = run_esmfold(fasta_temp_file, file_out_dir, cache_dir, test)
+        status_code = run_esmfold(
+            fasta_temp_file, file_out_dir, executable_path, cache_dir, test
+        )
         if status_code != 0:
             print(f"Error running {file}... continuing")
 
@@ -141,10 +152,27 @@ if __name__ == "__main__":
         default="*.fasta",
     )
     parser.add_argument(
-        "--cache_dir", type=Path, help="If you have a custom torchhub path"
+        "--cache_dir",
+        type=Path,
+        help="If you have a custom torchhub path (would recomend setting one up, otherwise models go to your home directory)",
+    )
+    parser.add_argument(
+        "--executable_path",
+        type=Path,
+        default=Path(
+            "/lus/eagle/projects/CVD-Mol-AI/hippekp/github/multinode_esmfold/run_pretrained_esmfold.py"
+        ),
+        help="Path to `run_pretrained_esmfold.py` (from this repo, it has been adapted to work with polaris env)",
     )
     parser.add_argument("-t", "--test", action="store_true")
 
     args = parser.parse_args()
 
-    main(args.fasta, args.out_dir, args.glob_pattern, args.test, args.cache_dir)
+    main(
+        args.fasta,
+        args.out_dir,
+        args.executable_path,
+        args.glob_pattern,
+        args.test,
+        args.cache_dir,
+    )
