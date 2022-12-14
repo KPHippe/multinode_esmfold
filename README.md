@@ -8,6 +8,26 @@ Allows esmfold to be run across multiple nodes (4 instances per node) on Polaris
 1. `pip install -r requirements.txt`
     * You might have to install pytorch, not sure if it comes with ESMFold but I think it does
 
+### Notes 
+`run_polaris.py` is the wrapper for the esmfold code, so this is what you run as a user. This code splits a single fasta file across all available gpus (even when multiple nodes are being run) for parallel processing. Below are arguments for this script: 
+
+```
+usage: run_polaris.py [-h] -f FASTA [-o OUT_DIR] [-g GLOB_PATTERN] [--cache_dir CACHE_DIR] [--executable_path EXECUTABLE_PATH] [-t]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -f FASTA, --fasta FASTA
+                        Directory of fastas or single fasta file
+  -o OUT_DIR, --out_dir OUT_DIR
+                        Path to output directory
+  -g GLOB_PATTERN, --glob_pattern GLOB_PATTERN
+                        Glob pattern to search directory for fasta files (defaults to *.fasta)
+  --cache_dir CACHE_DIR
+                        If you have a custom torchhub path (would recomend setting one up, otherwise models go to your home directory)
+  --executable_path EXECUTABLE_PATH
+                        Path to `run_pretrained_esmfold.py` (from this repo, it has been adapted to work with polaris env)
+  -t, --test
+```
 
 ### Example submission script
 ```
