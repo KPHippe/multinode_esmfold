@@ -2,6 +2,11 @@
 
 Allows esmfold to be run across multiple nodes (4 instances per node) on Polaris
 
+### Installation
+1. Follow installation instructions for [ESMFold](https://github.com/facebookresearch/esm
+)
+1. `pip install -r requirements.txt`
+    * You might have to install pytorch, not sure if it comes with ESMFold but I think it does
 
 
 ### Example submission script
@@ -62,6 +67,7 @@ echo "$(df -h /dev/shm)"
 
 # For applications that internally handle binding MPI/OpenMP processes to GPUs
 mpiexec -n ${NTOTRANKS} --ppn ${NRANKS_PER_NODE} --depth=${NDEPTH} --cpu-bind depth --hostfile $PBS_NODEFILE \
-/lus/eagle/projects/CVD-Mol-AI/hippekp/visualization_structures/mdh_submit/proc_per_gpu.sh \
+/lus/eagle/projects/CVD-Mol-AI/hippekp/github/multinode_esmfold/proc_per_gpu.sh \ # Change to path that matches your install path 
+# Change paths below to match where input/outputs are and your cache_dir 
 python /lus/eagle/projects/CVD-Mol-AI/hippekp/github/multinode_esmfold/run_polaris.py -f /lus/eagle/projects/CVD-Mol-AI/hippekp/visualization_structures/mdh/all_mdh_proteins_remove_empty.fasta -o /lus/eagle/projects/CVD-Mol-AI/hippekp/visualization_structures/mdh/mdh_structures --cache_dir /lus/eagle/projects/CVD-Mol-AI/hippekp/visualization_structures/esmfold_models
 ```

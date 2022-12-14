@@ -20,7 +20,7 @@ class Sequence(BaseModel):
 
 
 def read_fasta(fasta_file: PathLike) -> List[Sequence]:
-    """Caches the last 8 weeks worth of data in memory."""
+    """Reads fasta file into memory"""
     text = Path(fasta_file).read_text()
     text = re.sub(">$", "", text, flags=re.M)
     lines = [
