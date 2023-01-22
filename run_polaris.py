@@ -159,9 +159,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--executable_path",
         type=Path,
-        default=Path(
-            "/lus/eagle/projects/CVD-Mol-AI/hippekp/github/multinode_esmfold/run_pretrained_esmfold.py"
-        ),
+        default=(Path(__file__).parent / "run_pretrained_esmfold.py").resolve(),
         help="Path to `run_pretrained_esmfold.py` (from this repo, it has been adapted to work with polaris env)",
     )
     parser.add_argument("-t", "--test", action="store_true")
