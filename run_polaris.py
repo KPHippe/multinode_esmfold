@@ -20,17 +20,17 @@ class Sequence(BaseModel):
 
 
 def read_fasta(fasta_file: PathLike) -> List[Sequence]:
-    """Reads fasta file into memory"""
+    """Reads fasta file into dataclass."""
     text = Path(fasta_file).read_text()
-    text = re.sub(">$", "", text, flags=re.M)
+    pattern = re.compile("^>", re.MULTILINE)
+    non_parsed_seqs = re.split(pattern, text)[1:]
     lines = [
-        line.replace("\n", "")
-        for seq in text.split(">")
-        for line in seq.strip().split("\n", 1)
-    ][1:]
-    tags, seqs = lines[::2], lines[1::2]
+        line.replace("\n", "") for seq in non_parsed_seqs for line in seq.split("\n", 1)
+    ]
 
-    return [Sequence(sequence=seq, tag=tag) for seq, tag in zip(seqs, tags)]
+    return [
+        Sequence(sequence=seq, tag=tag) for seq, tag in zip(lines[1::2], lines[::2])
+    ]
 
 
 def write_fasta(
@@ -159,9 +159,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--executable_path",
         type=Path,
-        default=Path(
-            "/lus/eagle/projects/CVD-Mol-AI/hippekp/github/multinode_esmfold/run_pretrained_esmfold.py"
-        ),
+        default=(Path(__file__).parent / "run_pretrained_esmfold.py").resolve(),
         help="Path to `run_pretrained_esmfold.py` (from this repo, it has been adapted to work with polaris env)",
     )
     parser.add_argument("-t", "--test", action="store_true")
