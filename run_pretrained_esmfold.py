@@ -132,7 +132,7 @@ if __name__ == "__main__":
     if not args.fasta.exists():
         raise FileNotFoundError(args.fasta)
 
-    args.pdb.mkdir(exist_ok=True)
+    args.pdb.mkdir(exist_ok=True, parents=True)
 
     # Read fasta and sort sequences by length
     if VERBOSE:
@@ -188,12 +188,15 @@ if __name__ == "__main__":
         time_string = f"{tottime / len(headers):0.1f}s"
         if len(sequences) > 1:
             time_string = time_string + f" (amortized, batch size {len(sequences)})"
+
+        stats_dir = args.pdb / "stats"
+        stats_dir.mkdir(exist_ok=True, parents=True)
         for header, seq, pdb_string, mean_plddt, ptm in zip(
             headers, sequences, pdbs, output["mean_plddt"], output["ptm"]
         ):
             output_pdb = args.pdb / f"{header}.pdb"
             output_pdb.write_text(pdb_string)
-            output_stats = args.pdb / f"{header}.stats.txt"
+            output_stats = stats_dir / f"{header}.stats.txt"
             output_stats.write_text(f"ptm:{ptm:0.3f}\tmean_plddt:{mean_plddt:0.1f}\n")
             num_completed += 1
             if VERBOSE:
