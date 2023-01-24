@@ -191,8 +191,10 @@ if __name__ == "__main__":
         for header, seq, pdb_string, mean_plddt, ptm in zip(
             headers, sequences, pdbs, output["mean_plddt"], output["ptm"]
         ):
-            output_file = args.pdb / f"{header}.pdb"
-            output_file.write_text(pdb_string)
+            output_pdb = args.pdb / f"{header}.pdb"
+            output_pdb.write_text(pdb_string)
+            output_stats = args.pdb / f"{header}.stats.txt"
+            output_stats.write_text(f"ptm:{ptm:0.3f}\tmean_plddt:{mean_plddt:0.1f}\n")
             num_completed += 1
             if VERBOSE:
                 logger.info(
